@@ -93,6 +93,6 @@ Hotel-Management-Network-Cisco-Packet-Tracer/
 |---|---|
 | Fahim Montasir ([@inglorious-star](https://github.com/inglorious-star)) | Server Room & Final Testing |
 | Mst. Tabassum Binte Zia Prova | VLAN Configuration & Switching |
-| Mubassera Noon | DHCP & Wireless Network |
-| Rayan Rafsan ([@rynrafsan](https://github.com/rynrafsan)) | Network Design & IP Addressing |
+| Mubas Sera Noon | DHCP & Wireless Network |
+| Raiyan Jahan ([@rynrafsan](https://github.com/rynrafsan)) | Network Design & IP Addressing |
 | Md. Ibna Labid | VoIP Configuration |
