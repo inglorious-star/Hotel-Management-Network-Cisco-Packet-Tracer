@@ -1,0 +1,44 @@
+enable
+configure terminal
+hostname Router3
+no ip domain-lookup
+interface FastEthernet0/0
+ ip address 192.168.14.2 255.255.255.0
+ no shutdown
+interface FastEthernet0/1
+ no shutdown
+interface FastEthernet0/1.15
+ encapsulation dot1Q 15
+ ip address 192.168.15.1 255.255.255.0
+interface FastEthernet0/1.18
+ encapsulation dot1Q 18
+ ip address 192.168.18.1 255.255.255.0
+interface FastEthernet0/1.21
+ encapsulation dot1Q 21
+ ip address 192.168.21.1 255.255.255.0
+exit
+ip dhcp excluded-address 192.168.21.1 192.168.21.10
+ip dhcp excluded-address 192.168.15.1 192.168.15.10
+ip dhcp excluded-address 192.168.18.1 192.168.18.10
+ip dhcp pool FLOOR2
+ network 192.168.15.0 255.255.255.0
+ default-router 192.168.15.1
+ dns-server 192.168.17.10
+ option 150 ip 192.168.19.1
+ip dhcp pool FLOOR3
+ network 192.168.18.0 255.255.255.0
+ default-router 192.168.18.1
+ dns-server 192.168.17.10
+ option 150 ip 192.168.19.1
+ip dhcp pool VOICE-FLOORS
+ network 192.168.21.0 255.255.255.0
+ default-router 192.168.21.1
+ option 150 ip 192.168.19.1
+exit
+router ospf 1
+ network 192.168.14.0 0.0.0.255 area 0
+ network 192.168.15.0 0.0.0.255 area 0
+ network 192.168.18.0 0.0.0.255 area 0
+ network 192.168.21.0 0.0.0.255 area 0
+end
+write memory
