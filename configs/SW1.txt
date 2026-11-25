@@ -1,0 +1,23 @@
+enable
+configure terminal
+hostname SW1
+vlan 10
+ name ADMIN
+vlan 12
+ name RECEPTION
+vlan 13
+ name MARKETING
+exit
+interface FastEthernet0/1
+ switchport mode trunk
+interface range FastEthernet0/2 - 5
+ switchport mode access
+ switchport access vlan 10
+interface range FastEthernet0/6 - 9
+ switchport mode access
+ switchport access vlan 12
+interface range FastEthernet0/10 - 13
+ switchport mode access
+ switchport access vlan 13
+end
+write memory
