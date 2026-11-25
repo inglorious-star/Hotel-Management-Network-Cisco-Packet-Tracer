@@ -2,7 +2,7 @@
 
 > 🎓 Lab project for **CSE321: Computer Networks**, Daffodil International University (Spring 2025) · Team of 5
 
-A complete hotel network infrastructure designed and simulated in **Cisco Packet Tracer**. Each department and floor has its own VLAN and subnet, routers connect the whole building, DHCP hands out IP addresses automatically, and the network supports **wireless access points** and **VoIP IP phones**.
+A complete, **fully working** hotel network designed and simulated in **Cisco Packet Tracer**. Every department and floor has its own VLAN and subnet, three routers share routes with **OSPF**, **DHCP** hands out addresses automatically, guests and staff connect over **WPA2 Wi-Fi**, an internal **web + DNS server** hosts `hotel.local`, and **VoIP IP phones** call each other through Cisco CallManager Express.
 
 🌐 **Project website:** https://inglorious-star.github.io/Hotel-Management-Network-Cisco-Packet-Tracer/
 
@@ -12,54 +12,59 @@ A complete hotel network infrastructure designed and simulated in **Cisco Packet
 
 ## ✨ Features
 
-- 🧩 **VLANs** to separate each department and floor
-- 🔀 **Cisco 2811 routers** connecting departments and floors
-- 🔌 **Cisco 2950 switches** for LAN connectivity inside each department
-- 📡 **DHCP** for automatic IP address assignment
-- 📶 **Wireless access points** in the Admin Office, Reception and Second Floor
-- ☎️ **VoIP IP phones** in the IT Department, Second Floor and Third Floor
-- 🏗️ **Hierarchical design** that is easy to scale and maintain
+- 🧩 **9 VLANs** separating departments, floors, servers and voice traffic
+- 🔀 **3 × Cisco 2811 routers** with router-on-a-stick inter-VLAN routing
+- 🗺️ **OSPF (area 0)** dynamic routing across the whole building
+- 🔌 **Cisco 2960** access switch + **2 × Cisco 3560-24PS** PoE switches (they power the IP phones)
+- 📡 **DHCP** pools on the routers for every user and voice VLAN
+- 📶 **3 WPA2-PSK wireless networks**: `Hotel-Admin`, `Hotel-Reception`, `Hotel-Floor2`
+- 🖥️ **Server0**: DNS (`hotel.local`) and HTTP (custom hotel intranet page)
+- ☎️ **VoIP**: CallManager Express on the core router, extensions **1001–1003**, dedicated voice VLANs
 
 ---
 
-## 🌐 Network zones and subnets
+## 🌐 Zones, VLANs and subnets
 
-| Zone | Network | Subnet | Devices |
-|---|---|---|---|
-| Admin Office | LAN 1 | 192.168.10.0/24 | Laptops, PC, Access Point |
-| Reception Area | LAN 2 | 192.168.12.0/24 | PCs, Access Point |
-| Marketing Department | LAN 1 | 192.168.13.0/24 | PCs |
-| IT Department | LAN 2 | 192.168.19.0/24 | PCs, IP Phone |
-| Second Floor | LAN 3 | 192.168.15.0/24 | PCs, Access Point, IP Phone |
-| Third Floor | LAN 4 | 192.168.18.0/24 | PCs, IP Phone |
-| Server Room | Internal LAN | 192.168.17.0/24 | Servers |
+| Zone | VLAN | Subnet | Gateway (router) | Devices |
+|---|---|---|---|---|
+| Admin Office | 10 | 192.168.10.0/24 | Router1 | PC0, Access Point0, TabletPC |
+| Reception | 12 | 192.168.12.0/24 | Router1 | PC1, PC2, Access Point1, Smartphone |
+| Marketing | 13 | 192.168.13.0/24 | Router1 | PC3, PC4 |
+| Server Room | 17 | 192.168.17.0/24 | Router2 | Server0 (192.168.17.10, static) |
+| IT Department | 19 | 192.168.19.0/24 | Router2 | PC5 |
+| IT Voice | 20 | 192.168.20.0/24 | Router2 | IP Phone0 (ext. 1001) |
+| Second Floor | 15 | 192.168.15.0/24 | Router3 | PC6, Access Point2, TabletPC |
+| Third Floor | 18 | 192.168.18.0/24 | Router3 | PC7 |
+| Floors Voice | 21 | 192.168.21.0/24 | Router3 | IP Phone1 (1002), IP Phone2 (1003) |
 
-## 🧰 VLANs
+### 🔗 Links between routers
 
-| VLAN | Department |
-|---|---|
-| 10 | Admin Office |
-| 12 | Reception |
-| 13 | Marketing |
-| 15 | Second Floor |
-| 17 | Server Room |
-| 18 | Third Floor |
-| 19 | IT Department |
+| Link | Subnet | Addresses |
+|---|---|---|
+| Router1 ↔ Router2 (cross-over cable) | 192.168.11.0/24 | .1 / .2 |
+| Router2 ↔ Router3 (transit VLAN 14 through SW2) | 192.168.14.0/24 | .1 / .2 |
 
-## 🔗 Key interface addresses
+> In the Packet Tracer file the routers are labelled **Router0 / Router1 / Router2** and the switches **Switch0 / Multilayer Switch0 / Multilayer Switch1**; their hostnames (in the CLI) are **Router1 / Router2 / Router3** and **SW1 / SW2 / SW3**.
 
-| IP address | Interface |
-|---|---|
-| 192.168.10.1 | Switch0 to Router1 |
-| 192.168.11.1 / 192.168.11.2 | Router1 to Router7 link |
-| 192.168.12.1 | Reception Area (LAN 2) |
-| 192.168.13.1 | Marketing Department (LAN 1) |
-| 192.168.14.1 / 192.168.14.2 | Router7 to Router8 link |
-| 192.168.15.1 | Second Floor (LAN 3) |
-| 192.168.16.1 | First Floor segment |
-| 192.168.17.1 | Router8 (Server Room) |
-| 192.168.18.1 | Switch5 to Router8 (Third Floor) |
-| 192.168.19.1 | IT Department (LAN 2) |
+---
+
+## 🚀 How to open and test
+
+1. Install **Cisco Packet Tracer 9.0** or newer (free with a [Cisco NetAcad](https://www.netacad.com/) account).
+2. Download **[`HCMS.pkt`](HCMS.pkt)** from this repo and open it.
+3. Wait about a minute (or click the ⏩ fast-forward button a few times) so DHCP, OSPF and the phones finish starting up.
+
+Then try these tests:
+
+| Test | How | Expected result |
+|---|---|---|
+| DHCP | Click any PC → Desktop → IP Configuration | An address in its zone's subnet, DNS 192.168.17.10 |
+| Routing across floors | PC0 → Desktop → Command Prompt → `ping 192.168.18.11` | Replies from PC7 on the Third Floor (TTL 125) |
+| DNS + web | PC0 → Desktop → Web Browser → `http://hotel.local` | The hotel intranet homepage from Server0 |
+| Wi-Fi | Click a tablet or the smartphone → Config → Wireless0 | Connected to its SSID with a DHCP address |
+| VoIP call | IP Phone2 → GUI → lift the handset → dial `1001` | IP Phone0 rings (Floor 3 → IT department) |
+
+Wi-Fi password for all three SSIDs: `HotelWiFi2025` (demo lab only).
 
 ---
 
@@ -67,12 +72,14 @@ A complete hotel network infrastructure designed and simulated in **Cisco Packet
 
 | Technology | Purpose |
 |---|---|
-| VLAN | Logical segmentation of the network |
-| DHCP | Automatic IP address assignment |
-| Wireless (Access Points) | Wireless connectivity for laptops and mobile devices |
-| VoIP (IP Phones) | Internal voice communication |
-| Cisco 2950 Switch | LAN connectivity inside departments |
-| Cisco 2811 Router | Routing between VLANs and floors |
+| VLAN + 802.1Q trunks | Logical segmentation of the network |
+| Router-on-a-stick | Inter-VLAN routing with router subinterfaces |
+| OSPF | Dynamic routing between the three routers |
+| DHCP (with option 150) | Automatic addressing for PCs, wireless devices and IP phones |
+| WPA2-PSK Wi-Fi | Secure wireless access per zone |
+| DNS + HTTP | Internal `hotel.local` website |
+| CallManager Express + voice VLANs | Internal VoIP telephony |
+| PoE (3560-24PS) | Powering the IP phones over Ethernet |
 
 ---
 
@@ -80,10 +87,14 @@ A complete hotel network infrastructure designed and simulated in **Cisco Packet
 
 ```
 Hotel-Management-Network-Cisco-Packet-Tracer/
-├── index.html   # Project showcase website (topology, subnets, VLANs, team)
+├── HCMS.pkt     # The working Packet Tracer network (built in PT 9.0.1)
+├── configs/     # CLI configuration of every router and switch
+├── index.html   # Project showcase website
 ├── IMG/         # Topology screenshot
 └── README.md
 ```
+
+> The `.pkt` file is a rebuild of the original lab project in Packet Tracer 9.0.1, so it opens in current versions and every service works out of the box.
 
 ---
 
