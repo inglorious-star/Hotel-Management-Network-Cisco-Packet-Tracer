@@ -1,0 +1,28 @@
+enable
+configure terminal
+hostname SW2
+vlan 14
+ name TRANSIT
+vlan 17
+ name SERVERS
+vlan 19
+ name IT
+vlan 20
+ name VOICE
+exit
+interface FastEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+interface FastEthernet0/2
+ switchport mode access
+ switchport access vlan 14
+interface FastEthernet0/3
+ switchport mode access
+ switchport access vlan 17
+interface range FastEthernet0/4 - 6
+ switchport mode access
+ switchport access vlan 19
+interface FastEthernet0/5
+ switchport voice vlan 20
+end
+write memory
