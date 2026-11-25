@@ -1,0 +1,25 @@
+enable
+configure terminal
+hostname SW3
+vlan 15
+ name FLOOR2
+vlan 18
+ name FLOOR3
+vlan 21
+ name VOICE-FLOORS
+exit
+interface FastEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+interface range FastEthernet0/2 - 5
+ switchport mode access
+ switchport access vlan 15
+interface range FastEthernet0/6 - 9
+ switchport mode access
+ switchport access vlan 18
+interface FastEthernet0/4
+ switchport voice vlan 21
+interface FastEthernet0/7
+ switchport voice vlan 21
+end
+write memory
