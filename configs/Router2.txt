@@ -1,0 +1,55 @@
+enable
+configure terminal
+hostname Router2
+no ip domain-lookup
+interface FastEthernet0/0
+ ip address 192.168.11.2 255.255.255.0
+ no shutdown
+interface FastEthernet0/1
+ no shutdown
+interface FastEthernet0/1.14
+ encapsulation dot1Q 14
+ ip address 192.168.14.1 255.255.255.0
+interface FastEthernet0/1.17
+ encapsulation dot1Q 17
+ ip address 192.168.17.1 255.255.255.0
+interface FastEthernet0/1.19
+ encapsulation dot1Q 19
+ ip address 192.168.19.1 255.255.255.0
+interface FastEthernet0/1.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+exit
+ip dhcp excluded-address 192.168.20.1 192.168.20.10
+ip dhcp excluded-address 192.168.19.1 192.168.19.10
+ip dhcp pool IT
+ network 192.168.19.0 255.255.255.0
+ default-router 192.168.19.1
+ dns-server 192.168.17.10
+ option 150 ip 192.168.19.1
+ip dhcp pool VOICE
+ network 192.168.20.0 255.255.255.0
+ default-router 192.168.20.1
+ option 150 ip 192.168.19.1
+exit
+router ospf 1
+ network 192.168.11.0 0.0.0.255 area 0
+ network 192.168.14.0 0.0.0.255 area 0
+ network 192.168.17.0 0.0.0.255 area 0
+ network 192.168.19.0 0.0.0.255 area 0
+ network 192.168.20.0 0.0.0.255 area 0
+exit
+telephony-service
+ max-ephones 5
+ max-dn 5
+ ip source-address 192.168.19.1 port 2000
+ auto assign 1 to 5
+exit
+ephone-dn 1
+ number 1001
+ephone-dn 2
+ number 1002
+ephone-dn 3
+ number 1003
+end
+write memory
